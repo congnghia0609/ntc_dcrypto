@@ -13,7 +13,7 @@ dependencies:
 ### Usage
 **Use encode/decode Hex**  
 ```dart
-import 'ntcdcrypto.dart';
+import 'package:ntcdcrypto/ntcdcrypto.dart';
 
 main() {
   SSS sss = new SSS();
