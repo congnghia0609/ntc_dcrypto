@@ -25,8 +25,6 @@ import 'dart:convert';
 import 'dart:math';
 import "package:hex/hex.dart";
 
-import 'dart:typed_data';
-
 class SSS {
   final BigInt prime =
       BigInt.parse("115792089237316195423570985008687907853269984665640564039457584007913129639747", radix: 10);
@@ -46,6 +44,7 @@ class SSS {
     return combinedVal;
   }
 
+  // Returns a random number from the range (0, PRIME-1) inclusive
   BigInt randomNumber() {
     BigInt rs = BigInt.parse(genNumber());
     while (rs.compareTo(prime) >= 0) {
@@ -54,6 +53,7 @@ class SSS {
     return rs;
   }
 
+  // Return Base64 string from BigInt 256 bits long
   String toBase64(BigInt number) {
     String hexdata = number.toRadixString(16);
     int n = 64 - hexdata.length;
@@ -65,12 +65,14 @@ class SSS {
     return enbase64.convert(bytedata);
   }
 
+  // Return BigInt from Base64 string.
   BigInt fromBase64(String number) {
     var debase64 = new Base64Decoder();
     String hexdata = utf8.decode(debase64.convert(number));
     return BigInt.parse(hexdata, radix: 16);
   }
 
+  // Return Hex string from BigInt 256 bits long
   String toHex(BigInt number) {
     String hexdata = number.toRadixString(16);
     int n = 64 - hexdata.length;
@@ -80,10 +82,14 @@ class SSS {
     return hexdata;
   }
 
+  // Return BigInt from Hex string.
   BigInt fromHex(String number) {
     return BigInt.parse(number, radix: 16);
   }
 
+  // Converts a byte array into an a 256-bit BigInt, array based upon size of
+  // the input byte; all values are right-padded to length 256 bit, even if the most
+  // significant bit is zero.
   List<BigInt> splitSecretToBigInt(String secret) {
     List<BigInt> rs = List();
     if (secret != null && secret.isNotEmpty) {
@@ -115,6 +121,7 @@ class SSS {
     return hexData.substring(0, i + 1);
   }
 
+  // Converts an array of BigInt to the original byte array, removing any least significant nulls.
   String mergeBigIntToString(List<BigInt> secrets) {
     String rs = "";
     String hexData = "";
@@ -132,6 +139,7 @@ class SSS {
     return rs;
   }
 
+  // inNumbers(array, value) returns boolean whether or not value is in array.
   bool inNumbers(List<BigInt> numbers, BigInt value) {
     for (BigInt n in numbers) {
       if (n.compareTo(value) == 0) {
@@ -141,6 +149,9 @@ class SSS {
     return false;
   }
 
+  // Compute the polynomial value using Horner's method.
+  // https://en.wikipedia.org/wiki/Horner%27s_method
+  // y = a + bx + cx^2 + dx^3 = ((dx + c)x + b)x + a
   BigInt evaluatePolynomial(List<List<BigInt>> poly, int part, BigInt x) {
     int last = poly[part].length - 1;
     BigInt accum = poly[part][last];
@@ -150,6 +161,9 @@ class SSS {
     return accum;
   }
 
+  // Returns a new array of secret shares (encoding x,y pairs as Base64 or Hex strings)
+  // created by Shamir's Secret Sharing Algorithm requiring a minimum number of
+  // share to recreate, of length shares, from the input secret raw as a string.
   List<String> create(int minimum, int shares, String secret) {
     List<String> rs = List();
     // Verify minimum isn't greater than shares; there is no way to recreate
@@ -175,10 +189,11 @@ class SSS {
     //
     // polynomial[parts][minimum]
     //BigInt[][] polynomial = new BigInteger[secrets.size()][minimum];
-    var polynomial = List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
-    for (int i=0; i<secrets.length; i++) {
+    var polynomial =
+        List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
+    for (int i = 0; i < secrets.length; i++) {
       polynomial[i][0] = secrets[i];
-      for (int j=1; j<minimum; j++) {
+      for (int j = 1; j < minimum; j++) {
         // Each coefficient should be unique
         BigInt number = randomNumber();
         while (inNumbers(numbers, number)) {
@@ -198,13 +213,14 @@ class SSS {
     //
     // points[shares][parts][2]
     //BigInteger[][][] points = new BigInteger[shares][secrets.size()][2];
-    var points = List<List<List<BigInt>>>.generate(shares, (i) => List<List<BigInt>>.generate(secrets.length, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+    var points = List<List<List<BigInt>>>.generate(shares,
+        (i) => List<List<BigInt>>.generate(secrets.length, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
     // For every share...
-    for (int i=0; i<shares; i++) {
+    for (int i = 0; i < shares; i++) {
       String s = "";
       // and every part of the secret...
-      for (int j=0; j<secrets.length; j++) {
+      for (int j = 0; j < secrets.length; j++) {
         // generate a new x-coordinate
         BigInt number = randomNumber();
         while (inNumbers(numbers, number)) {
@@ -228,6 +244,11 @@ class SSS {
     return rs;
   }
 
+  // Takes in a given string to check if it is a valid secret
+  // Requirements:
+  // 	 Length multiple of 128
+  //	 Can decode each 64 character block as Hex
+  // Returns only success/failure (bool)
   bool isValidShareHex(String candidate) {
     if (candidate == null || candidate.isEmpty) {
       return false;
@@ -235,7 +256,7 @@ class SSS {
     if (candidate.length % 128 != 0) {
       return false;
     }
-    int count = (candidate.length / 64).toInt();
+    int count = candidate.length ~/ 64;
     for (int i = 0; i < count; i++) {
       String part = candidate.substring(i * 64, (i + 1) * 64);
       BigInt decode = fromHex(part);
@@ -247,16 +268,19 @@ class SSS {
     return true;
   }
 
+  // Takes a string array of shares encoded in Hex created via Shamir's
+  // Algorithm; each string must be of equal length of a multiple of 128 characters
+  // as a single 128 character share is a pair of 256-bit numbers (x, y).
   List<List<List<BigInt>>> decodeShareHex(List<String> shares) {
     String first = shares[0];
-    int nparts = (first.length / 128).toInt();
+    int parts = first.length ~/ 128;
 
     // Recreate the original object of x, y points, based upon number of shares
     // and size of each share (number of parts in the secret).
     //
     // points[shares][parts][2]
     var points = List<List<List<BigInt>>>.generate(
-        shares.length, (i) => List<List<BigInt>>.generate(nparts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+        shares.length, (i) => List<List<BigInt>>.generate(parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
     // For each share...
     for (int i = 0; i < shares.length; i++) {
@@ -267,7 +291,7 @@ class SSS {
 
       // find the number of parts it represents.
       String share = shares[i];
-      int count = (share.length / 128).toInt();
+      int count = share.length ~/ 128;
 
       // and for each part, find the x,y pair...
       for (int j = 0; j < count; j++) {
@@ -280,6 +304,10 @@ class SSS {
     return points;
   }
 
+  // Takes a string array of shares encoded in Base64 or Hex created via Shamir's Algorithm
+  // Note: the polynomial will converge if the specified minimum number of shares
+  //       or more are passed to this function. Passing thus does not affect it
+  //       Passing fewer however, simply means that the returned secret is wrong.
   String combine(List<String> shares) {
     String rs = "";
     if (shares == null || shares.isEmpty) {
