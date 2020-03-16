@@ -1,13 +1,46 @@
 # ntc_dcrypto
 ntc_dcrypto is module python cryptography.
 
-## Getting Started
+## Use this package as a library
+Add this to your package's pubspec.yaml file:  
+```yaml
+dependencies:
+  ntcdcrypto: ^0.0.1
+```
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+## 1. An implementation of Shamir's Secret Sharing Algorithm 256-bits in Dart
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+### Usage
+**Use encode/decode Hex**  
+```dart
+import 'ntcdcrypto.dart';
+
+main() {
+  SSS sss = new SSS();
+  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  print("secret: ${s}");
+  print("secret.length: ${s.length}");
+  // creates a set of shares
+  List<String> arr = sss.create(3, 6, s);
+  //print(arr);
+
+  // combines shares into secret
+  var s1 = sss.combine(arr.sublist(0, 3));
+  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
+  print("secret: ${s1}");
+  print("secret.length: ${s1.length}");
+
+  var s2 = sss.combine(arr.sublist(3, arr.length));
+  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
+  print("secret: ${s2}");
+  print("secret.length: ${s2.length}");
+
+  var s3 = sss.combine(arr.sublist(1, 5));
+  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
+  print("secret: ${s3}");
+  print("secret.length: ${s3.length}");
+}
+```
+
+## License
+This code is under the [Apache Licence v2](https://www.apache.org/licenses/LICENSE-2.0).  

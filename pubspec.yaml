@@ -1,7 +1,7 @@
 name: ntcdcrypto
 description: ntc_dcrypto is module python cryptography.
 version: 0.0.1
-author: NghiaTC
+#author: NghiaTC
 homepage: https://github.com/congnghia0609/ntc_dcrypto
 
 environment:
