@@ -38,7 +38,7 @@ main() {
 //  print(b64data);  // lOpFwywpCeVAcK0/LOKG+YtW71xyj1bX06CcW7VZMFc=
 //  // OTRlYTQ1YzMyYzI5MDllNTQwNzBhZDNmMmNlMjg2Zjk4YjU2ZWY1YzcyOGY1NmQ3ZDNhMDljNWJiNTU5MzA1Nw==
 //  var hexdata = sss.toHex(number);
-//  print(hexdata.length); // 65
+//  print(hexdata.length); // 64
 //  print(hexdata); // 94ea45c32c2909e54070ad3f2ce286f98b56ef5c728f56d7d3a09c5bb5593057
 //  var numb64decode = sss.fromBase64(b64data);
 //  print(numb64decode);
