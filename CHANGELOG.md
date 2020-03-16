@@ -1,3 +1,7 @@
-## [0.0.1] - TODO: Add release date.
+## [0.0.1] - Mar 16, 2020.
 
-* TODO: Describe initial release.
+* First release. See file README.md.
+
+## [0.0.2] - Mar 16, 2020.
+
+* Update and clean code.
