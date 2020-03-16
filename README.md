@@ -1,5 +1,5 @@
 # ntc_dcrypto
-ntc_dcrypto is module python cryptography.
+ntc_dcrypto is module dart cryptography.
 
 ## Use this package as a library
 Add this to your package's pubspec.yaml file:  
