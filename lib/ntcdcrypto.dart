@@ -188,7 +188,7 @@ class SSS {
     // a different polynomial for each part of the secret
     //
     // polynomial[parts][minimum]
-    //BigInt[][] polynomial = new BigInteger[secrets.size()][minimum];
+    //BigInt[][] polynomial = new BigInt[secrets.size()][minimum];
     var polynomial =
         List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
     for (int i = 0; i < secrets.length; i++) {
@@ -204,7 +204,6 @@ class SSS {
         polynomial[i][j] = number;
       }
     }
-    //System.out.println(Arrays.deepToString(polynomial));
 
     // Create the points object; this holds the (x, y) points of each share.
     // Again, because secrets is an array, each share could have multiple parts
@@ -212,7 +211,7 @@ class SSS {
     // always two, as it is storing an x, y pair of points.
     //
     // points[shares][parts][2]
-    //BigInteger[][][] points = new BigInteger[shares][secrets.size()][2];
+    //BigInt[][][] points = new BigInt[shares][secrets.size()][2];
     var points = List<List<List<BigInt>>>.generate(shares,
         (i) => List<List<BigInt>>.generate(secrets.length, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
@@ -235,8 +234,6 @@ class SSS {
         // encode to Hex.
         s += toHex(points[i][j][0]);
         s += toHex(points[i][j][1]);
-        //System.out.println("x[share-"+i+"][part-"+j+"]: " + points[i][j][0].toString(10));
-        //System.out.println("y[share-"+i+"][part-"+j+"]: " + points[i][j][1].toString(10));
       }
       rs.add(s);
     }
