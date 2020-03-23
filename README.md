@@ -5,7 +5,7 @@ ntc_dcrypto is module dart cryptography.
 Add this to your package's pubspec.yaml file:  
 ```yaml
 dependencies:
-  ntcdcrypto: ^0.0.2
+  ntcdcrypto: ^0.0.3
 ```
 
 ## 1. An implementation of Shamir's Secret Sharing Algorithm 256-bits in Dart
