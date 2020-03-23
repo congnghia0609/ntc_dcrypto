@@ -258,7 +258,7 @@ class SSS {
       String part = candidate.substring(i * 64, (i + 1) * 64);
       BigInt decode = fromHex(part);
       // decode <= 0 || decode >= PRIME ==> false
-      if (decode.compareTo(BigInt.one) <= 0 || decode.compareTo(prime) >= 0) {
+      if (decode.compareTo(BigInt.zero) <= 0 || decode.compareTo(prime) >= 0) {
         return false;
       }
     }
