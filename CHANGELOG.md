@@ -13,3 +13,7 @@
 ## [0.0.4] - Mar 23, 2020.
 
 * Update code isValidShareHex.  
+
+## [0.0.5] - May 24, 2020.
+
+* Add feature encode/decode Base64Url.  
