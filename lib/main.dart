@@ -33,14 +33,18 @@ main() {
 //  // Dev2: encode / decode
 //  BigInt number = BigInt.parse("67356225285819719212258382314594931188352598651646313425411610888829358649431");
 //  print(number.toRadixString(10));
-//  var b64data = sss.toBase64(number);
-//  print(b64data.length); // 88
-//  print(b64data);  // lOpFwywpCeVAcK0/LOKG+YtW71xyj1bX06CcW7VZMFc=
+//  var b64data = sss.toBase64Url(number);
+//  print(b64data.length);
+//  print(b64data);
+//  // 44
+//  // lOpFwywpCeVAcK0/LOKG+YtW71xyj1bX06CcW7VZMFc=
+//  // lOpFwywpCeVAcK0_LOKG-YtW71xyj1bX06CcW7VZMFc=
+//  // 88
 //  // OTRlYTQ1YzMyYzI5MDllNTQwNzBhZDNmMmNlMjg2Zjk4YjU2ZWY1YzcyOGY1NmQ3ZDNhMDljNWJiNTU5MzA1Nw==
 //  var hexdata = sss.toHex(number);
 //  print(hexdata.length); // 64
 //  print(hexdata); // 94ea45c32c2909e54070ad3f2ce286f98b56ef5c728f56d7d3a09c5bb5593057
-//  var numb64decode = sss.fromBase64(b64data);
+//  var numb64decode = sss.fromBase64Url(b64data);
 //  print(numb64decode);
 //  var numhexdecode = sss.fromHex(hexdata);
 //  print(numhexdecode);
@@ -63,29 +67,29 @@ main() {
 //  print(grid);
 
 
-  // test1
-  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  print("secret: ${s}");
-  print("secret.length: ${s.length}");
-  // creates a set of shares
-  List<String> arr = sss.create(3, 6, s);
-  //print(arr);
-
-  // combines shares into secret
-  var s1 = sss.combine(arr.sublist(0, 3));
-  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
-  print("secret: ${s1}");
-  print("secret.length: ${s1.length}");
-
-  var s2 = sss.combine(arr.sublist(3, arr.length));
-  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
-  print("secret: ${s2}");
-  print("secret.length: ${s2.length}");
-
-  var s3 = sss.combine(arr.sublist(1, 5));
-  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
-  print("secret: ${s3}");
-  print("secret.length: ${s3.length}");
+//  // test1
+//  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+//  print("secret: ${s}");
+//  print("secret.length: ${s.length}");
+//  // creates a set of shares
+//  List<String> arr = sss.create(3, 6, s, false);
+//  //print(arr);
+//
+//  // combines shares into secret
+//  var s1 = sss.combine(arr.sublist(0, 3), false);
+//  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
+//  print("secret: ${s1}");
+//  print("secret.length: ${s1.length}");
+//
+//  var s2 = sss.combine(arr.sublist(3, arr.length), false);
+//  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
+//  print("secret: ${s2}");
+//  print("secret.length: ${s2.length}");
+//
+//  var s3 = sss.combine(arr.sublist(1, 5), false);
+//  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
+//  print("secret: ${s3}");
+//  print("secret.length: ${s3.length}");
 
 
 //  // test2
@@ -103,17 +107,73 @@ main() {
 //  //print(arr);
 //
 //  // combines shares into secret
-//  var s1 = sss.combine(arr.sublist(0, 3));
+//  var s1 = sss.combine(arr.sublist(0, 3), false);
 //  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
 //  print("secret: ${s1}");
 //  print("secret.length: ${s1.length}");
 //
-//  var s2 = sss.combine(arr.sublist(3, arr.length));
+//  var s2 = sss.combine(arr.sublist(3, arr.length), false);
 //  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
 //  print("secret: ${s2}");
 //  print("secret.length: ${s2.length}");
 //
-//  var s3 = sss.combine(arr.sublist(1, 5));
+//  var s3 = sss.combine(arr.sublist(1, 5), false);
+//  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
+//  print("secret: ${s3}");
+//  print("secret.length: ${s3.length}");
+
+
+  // test3
+  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  print("secret: ${s}");
+  print("secret.length: ${s.length}");
+  // creates a set of shares
+  List<String> arr = sss.create(3, 6, s, true);
+  //print(arr);
+
+  // combines shares into secret
+  var s1 = sss.combine(arr.sublist(0, 3), true);
+  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
+  print("secret: ${s1}");
+  print("secret.length: ${s1.length}");
+
+  var s2 = sss.combine(arr.sublist(3, arr.length), true);
+  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
+  print("secret: ${s2}");
+  print("secret.length: ${s2.length}");
+
+  var s3 = sss.combine(arr.sublist(1, 5), true);
+  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
+  print("secret: ${s3}");
+  print("secret.length: ${s3.length}");
+
+
+//  // test4
+//  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+//  print("secret: ${s}");
+//  print("secret.length: ${s.length}");
+//  // creates a set of shares
+//  List<String> arr = List();
+//  arr.add("5K658W3HsUJznGuG-Wopl5RmlgfnOlIywIXNMK3FLk8=o3nzK8zTmfbDGStLLeKsE0jJrCMFOpLY1KAGHWFVzmw=wDyZ65yO8m4cQFRgfePvv9Bm13lqPnn89-mGCM6fG4A=IJrdRsJYkPCW9EeHu0x2k7nYcjdybQNMo97rpqhutck=vUw82_ma8GcxtutzRDlGPuzH4-xEeDt7F4HBoQ-BiIQ=xLoPS4AkYTi7neR6U2X36nA9EritybvqpeW5Fk2rH2M=cts237KejOmRLCFlcJuQak6yWNlspWYbpG--159CDsI=uF2CE31BTxuNw52ArvOWU012pKhUSbh8RZyVLgkB1Fs=");
+//  arr.add("fTcsa9KUZ3Bj90Kjby3lQbWvw-qIz7qd3Hcp2GXFvOU=0I3lmm7QkNWceXgE7HlfqXFTjx9IC8DHJFxq1SHI38g=m-iAPMRkSeLhjBmpFCcVmK-ij717mo4A5CJb59x_WHc=QljK8TBqpMcGajO36Iq6TSY9i2sIpqryBUR-sM8AbS8=s_-MPlE5uyVL_x0tW4oqkhtUQ_p3ewck4SUhu_8BW7c=ngY2QG-0pw8dLUt6-n3Z8ZXAbu6omHsE487etr766U4=rBwse8m7gBiM-2sSSghUsZ6NyTr2AaUzlzYY73xySSQ=PlVKJLNYTQJQVrfr5xAYynR0jbOY1JRZlnxDX7jnvMg=");
+//  arr.add("w3Jkf6Z7Yu1AZ6MKItRcctLnfbYAdFCXL2GQ5MFHiMY=RkRsomEVMrDNTcRp9z0-7OuxejYPHS-8KaCe7zU4J8M=yewuhylKn3k-lEtWGzGr3GWcwq6Iq1C3K04gtUwDjr4=v7Brej_SAU1ZgeUbNATPG6b0DG4W_UvWKWP-y1zwf8E=y_7M0EXAsGNb1RczU5O3ETSdLP6ZnmNfe_GbFzDQTvI=sCM7OcGlgDdzqOJtGPJmFdqqlSSsl-cxESbMGdWmDaM=BsGo_7_Ex9yD6I4_NNRDdTJlBaSapklJjmqnklAHtVY=SnGjhnGzb44mW-Znf66gQ2-EQpPrzq3qKENlh6sraHI=");
+//  arr.add("csGGaMUuHDAaDonxJL0KfyG0Ss-T1dbuwZOJ-hxNI0o=UQlyoA6i2VMc2Kysl1sH1TC1zLeXOuAD8bHO0ojTRbc=IqdpT9Kx3J7k9-yU1D3pTKO2p3vX0H2NzipoQOWToNk=Q6ZE-2epO7xYtQs7fIQzn1gzgVDRxAVhqxIkIF_mJP4=M8wNAoP-KRL-aRx92guGJHG0aqB7Sil6dGWMhTGDwWk=SJhC8RRdnXJzpzdiGPGrJwUhyw0fURpwLSlVK20UxtY=9Vtngtd1PMfw9cIapuKX6ItqueqUG6S1VNGyWYmSCqk=h3zbVA1kDoxD_SiNGasrJX4vtW9kJs0KxA7KPogv9vA=");
+//  arr.add("9QKSk5UpqHTDgqNzABhY1cpKJHW2Pa_qbMBlHS5sRwU=-MLMyVwzt3o9IbtsAfmslyniAJQ-jTfqrL2LFGoNRMs=x7qgHtj-OjDYv6WYtfklWEOyFguuZLHOCjn5Jn5a6J0=oM0tg3QDP8LsBDTWctnLHFtNpC9rs89FywzRL6KgJ70=e28jTt7Q-T9Ao4fZjZjZ0FRpfkvT9wSuXR17mEWSzSI=ZTFKrvAsNsmcQG0Ca4dSixgD20gXqQLJj8vdO30bzdM=Yy-smQCOzm2UVUPY7FX6_EkDoSrS4K6sfQ7X8CQedq8=xHp9pi-NJPosjyRQPypxs95j126JEk0D5qLZL6scx40=");
+//  arr.add("jBMScPNqLqtB3GASqZ3XZux0Bh3vhGYw2h1SeaZJjEo=ZiguZLL3xU7FaEAynDjifHkynzRlm00eVNPhnr2NNW4=hJ_hcVm45CFYD9UrzxBrrJDyY_8l2wQ-M0PSH-V4Ck8=fpZJLvbIv85XS8CRutjavpY_Fdf76G-DirfnL6Nz3y0=3ZKJZ0WF-e79ZpaLT2MELiCbN3xRqNMzMrLbQ4A0qXc=deCGm9koob82zKVR-6XPiavInSatUnIEwJaTtEpbsJs=7xoGyz4IJG2SimElIYA-0lvnIKvZBbkK2PydA1TzOb0=dJ0OrQKkVhZNg9DIDRtW1MA7OvaMr385D4Q8MxiPaLQ=");
+//  //print(arr);
+//
+//  // combines shares into secret
+//  var s1 = sss.combine(arr.sublist(0, 3), true);
+//  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
+//  print("secret: ${s1}");
+//  print("secret.length: ${s1.length}");
+//
+//  var s2 = sss.combine(arr.sublist(3, arr.length), true);
+//  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
+//  print("secret: ${s2}");
+//  print("secret.length: ${s2.length}");
+//
+//  var s3 = sss.combine(arr.sublist(1, 5), true);
 //  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
 //  print("secret: ${s3}");
 //  print("secret.length: ${s3.length}");

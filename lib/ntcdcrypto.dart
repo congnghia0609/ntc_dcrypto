@@ -23,6 +23,7 @@ library ntcdcrypto;
 
 import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 import "package:hex/hex.dart";
 
 class SSS {
@@ -53,6 +54,48 @@ class SSS {
     return rs;
   }
 
+  Uint8List hexToU8(String hex) {
+    if (hex.length % 2 == 1) {
+      hex = "0" + hex;
+    }
+
+    int len = hex.length ~/ 2;
+    Uint8List u8 = new Uint8List(len);
+
+    var j = 0;
+    for (int i=0; i<len; i++) {
+      u8[i] = int.parse(hex.substring(j, j + 2), radix: 16);
+      j += 2;
+    }
+
+    return u8;
+  }
+
+  String u8ToHex(Uint8List u8) {
+    String hex = "";
+    int len = u8.length;
+    for (int i=0; i<len; i++) {
+      hex += u8[i].toRadixString(16).padLeft(2, '0');
+    }
+    return hex;
+  }
+
+  // Return Base64Url string from BigInt 256 bits long
+  String toBase64Url(BigInt number) {
+    String hexdata = number.toRadixString(16);
+    int n = 64 - hexdata.length;
+    for (int i = 0; i < n; i++) {
+      hexdata = "0" + hexdata;
+    }
+    return base64Url.encode(hexToU8(hexdata));
+  }
+
+  // Return BigInt from Base64Url string.
+  BigInt fromBase64Url(String number) {
+    String hexdata = u8ToHex(base64Url.decode(number));
+    return BigInt.parse(hexdata, radix: 16);
+  }
+
   // Return Base64 string from BigInt 256 bits long
   String toBase64(BigInt number) {
     String hexdata = number.toRadixString(16);
@@ -60,15 +103,12 @@ class SSS {
     for (int i = 0; i < n; i++) {
       hexdata = "0" + hexdata;
     }
-    var bytedata = utf8.encode(hexdata); //ascii.encode(hexdata);
-    var enbase64 = new Base64Encoder.urlSafe();
-    return enbase64.convert(bytedata);
+    return base64Url.encode(utf8.encode(hexdata));
   }
 
   // Return BigInt from Base64 string.
   BigInt fromBase64(String number) {
-    var debase64 = new Base64Decoder();
-    String hexdata = utf8.decode(debase64.convert(number));
+    String hexdata = utf8.decode(base64Url.decode(number));
     return BigInt.parse(hexdata, radix: 16);
   }
 
@@ -164,7 +204,7 @@ class SSS {
   // Returns a new array of secret shares (encoding x,y pairs as Base64 or Hex strings)
   // created by Shamir's Secret Sharing Algorithm requiring a minimum number of
   // share to recreate, of length shares, from the input secret raw as a string.
-  List<String> create(int minimum, int shares, String secret) {
+  List<String> create(int minimum, int shares, String secret, bool isBase64) {
     List<String> rs = List();
     // Verify minimum isn't greater than shares; there is no way to recreate
     // the original polynomial in our current setup, therefore it doesn't make
@@ -231,14 +271,78 @@ class SSS {
         points[i][j][0] = number;
         points[i][j][1] = evaluatePolynomial(polynomial, j, number);
 
-        // encode to Hex.
-        s += toHex(points[i][j][0]);
-        s += toHex(points[i][j][1]);
+        if (isBase64) { // encode to Base64.
+          s += toBase64Url(points[i][j][0]);
+          s += toBase64Url(points[i][j][1]);
+        } else { // encode to Hex.
+          s += toHex(points[i][j][0]);
+          s += toHex(points[i][j][1]);
+        }
       }
       rs.add(s);
     }
 
     return rs;
+  }
+
+  // Takes in a given string to check if it is a valid secret
+  // Requirements:
+  // 	 Length multiple of 88
+  //	 Can decode each 44 character block as Base64
+  // Returns only success/failure (bool)
+  bool isValidShareBase64(String candidate) {
+    if (candidate == null || candidate.isEmpty) {
+      return false;
+    }
+    if (candidate.length % 88 != 0) {
+      return false;
+    }
+    int count = candidate.length ~/ 44;
+    for (int i = 0; i < count; i++) {
+      String part = candidate.substring(i * 44, (i + 1) * 44);
+      BigInt decode = fromBase64Url(part);
+      // decode <= 0 || decode >= PRIME ==> false
+      if (decode.compareTo(BigInt.zero) <= 0 || decode.compareTo(prime) >= 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  // Takes a string array of shares encoded in Base64 created via Shamir's
+  // Algorithm; each string must be of equal length of a multiple of 88 characters
+  // as a single 88 character share is a pair of 256-bit numbers (x, y).
+  List<List<List<BigInt>>> decodeShareBase64(List<String> shares) {
+    String first = shares[0];
+    int parts = first.length ~/ 88;
+
+    // Recreate the original object of x, y points, based upon number of shares
+    // and size of each share (number of parts in the secret).
+    //
+    // points[shares][parts][2]
+    var points = List<List<List<BigInt>>>.generate(
+        shares.length, (i) => List<List<BigInt>>.generate(parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+
+    // For each share...
+    for (int i = 0; i < shares.length; i++) {
+      // ensure that it is valid
+      if (isValidShareBase64(shares[i]) == false) {
+        throw new Exception("one of the shares is invalid");
+      }
+
+      // find the number of parts it represents.
+      String share = shares[i];
+      int count = share.length ~/ 88;
+
+      // and for each part, find the x,y pair...
+      for (int j = 0; j < count; j++) {
+        String cshare = share.substring(j * 88, (j + 1) * 88);
+        // decoding from Hex.
+        points[i][j][0] = fromBase64Url(cshare.substring(0, 44));
+        points[i][j][1] = fromBase64Url(cshare.substring(44, 88));
+      }
+    }
+    return points;
   }
 
   // Takes in a given string to check if it is a valid secret
@@ -305,7 +409,7 @@ class SSS {
   // Note: the polynomial will converge if the specified minimum number of shares
   //       or more are passed to this function. Passing thus does not affect it
   //       Passing fewer however, simply means that the returned secret is wrong.
-  String combine(List<String> shares) {
+  String combine(List<String> shares, bool isBase64) {
     String rs = "";
     if (shares == null || shares.isEmpty) {
       throw new Exception("shares is NULL or empty");
@@ -315,7 +419,12 @@ class SSS {
     // and size of each share (number of parts in the secret).
     //
     // points[shares][parts][2]
-    var points = decodeShareHex(shares);
+    var points;
+    if (isBase64) {
+      points = decodeShareBase64(shares);
+    } else {
+      points = decodeShareHex(shares);
+    }
 
     // Use Lagrange Polynomial Interpolation (LPI) to reconstruct the secret.
     // For each part of the secret (clearest to iterate over)...
