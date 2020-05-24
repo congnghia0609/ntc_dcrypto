@@ -13,11 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-/**
- *
- * @author nghiatc
- * @since Mar 16, 2020
- */
+///
+/// @author nghiatc
+/// @since Mar 16, 2020
 
 library ntcdcrypto;
 
