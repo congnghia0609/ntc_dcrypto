@@ -384,15 +384,14 @@ class SSS {
       // and every part of the secret...
       for (int j = 0; j < secrets.length; j++) {
         // generate a new x-coordinate
-        BigInt number = randomNumber();
-        while (inNumbers(numbers, number)) {
-          number = randomNumber();
+        BigInt x = randomNumber();
+        while (inNumbers(numbers, x)) {
+          x = randomNumber();
         }
-        numbers.add(number);
+        numbers.add(x);
 
         // and evaluate the polynomial at that point
-        BigInt x = number;
-        BigInt y = evaluatePolynomial(polynomial, j, number);
+        BigInt y = evaluatePolynomial(polynomial, j, x);
         if (isBase64) { // encode to Base64.
           s += toBase64Url(x);
           s += toBase64Url(y);
