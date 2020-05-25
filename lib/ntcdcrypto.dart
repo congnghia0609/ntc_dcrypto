@@ -29,10 +29,11 @@ class SSS {
       BigInt.parse("115792089237316195423570985008687907853269984665640564039457584007913129639747", radix: 10);
   var rand = Random.secure();
 
-  // 16bit, because random.nextInt() only supports (2^32)-1 possible values.
+  /// 16bit, because random.nextInt() only supports (2^32)-1 possible values.
   final part = 16; // 256bit / 16bit
   final maxInt16 = 1 << 16; // 2^16
 
+  /// Generate number 256-bits base 10.
   String genNumber() {
     String combinedVal = "";
     // random parts
@@ -43,7 +44,7 @@ class SSS {
     return combinedVal;
   }
 
-  // Returns a random number from the range (0, PRIME-1) inclusive
+  /// Returns a random number from the range (0, PRIME-1) inclusive
   BigInt randomNumber() {
     BigInt rs = BigInt.parse(genNumber());
     while (rs.compareTo(prime) >= 0) {
@@ -52,6 +53,7 @@ class SSS {
     return rs;
   }
 
+  /// Convert hex string to Uint8List
   Uint8List hexToU8(String hex) {
     if (hex.length % 2 == 1) {
       hex = "0" + hex;
@@ -69,6 +71,7 @@ class SSS {
     return u8;
   }
 
+  /// Convert Uint8List to hex string
   String u8ToHex(Uint8List u8) {
     String hex = "";
     int len = u8.length;
@@ -78,7 +81,7 @@ class SSS {
     return hex;
   }
 
-  // Return Base64Url string from BigInt 256 bits long
+  /// Return Base64Url string from BigInt 256 bits long
   String toBase64Url(BigInt number) {
     String hexdata = number.toRadixString(16);
     int n = 64 - hexdata.length;
@@ -88,13 +91,13 @@ class SSS {
     return base64Url.encode(hexToU8(hexdata));
   }
 
-  // Return BigInt from Base64Url string.
+  /// Return BigInt from Base64Url string.
   BigInt fromBase64Url(String number) {
     String hexdata = u8ToHex(base64Url.decode(number));
     return BigInt.parse(hexdata, radix: 16);
   }
 
-  // Return Base64 string from BigInt 256 bits long
+  /// Return Base64 string from BigInt 256 bits long
   String toBase64(BigInt number) {
     String hexdata = number.toRadixString(16);
     int n = 64 - hexdata.length;
@@ -104,13 +107,13 @@ class SSS {
     return base64Url.encode(utf8.encode(hexdata));
   }
 
-  // Return BigInt from Base64 string.
+  /// Return BigInt from Base64 string.
   BigInt fromBase64(String number) {
     String hexdata = utf8.decode(base64Url.decode(number));
     return BigInt.parse(hexdata, radix: 16);
   }
 
-  // Return Hex string from BigInt 256 bits long
+  /// Return Hex string from BigInt 256 bits long
   String toHex(BigInt number) {
     String hexdata = number.toRadixString(16);
     int n = 64 - hexdata.length;
@@ -120,14 +123,14 @@ class SSS {
     return hexdata;
   }
 
-  // Return BigInt from Hex string.
+  /// Return BigInt from Hex string.
   BigInt fromHex(String number) {
     return BigInt.parse(number, radix: 16);
   }
 
-  // Converts a byte array into an a 256-bit BigInt, array based upon size of
-  // the input byte; all values are right-padded to length 256 bit, even if the most
-  // significant bit is zero.
+  /// Converts a byte array into an a 256-bit BigInt, array based upon size of
+  /// the input byte; all values are right-padded to length 256 bit, even if the most
+  /// significant bit is zero.
   List<BigInt> splitSecretToBigInt(String secret) {
     List<BigInt> rs = List();
     if (secret != null && secret.isNotEmpty) {
@@ -151,6 +154,7 @@ class SSS {
     return rs;
   }
 
+  /// Remove right character '0'
   String trimRight(String hexData) {
     int i = hexData.length - 1;
     while (i >= 0 && hexData[i] == '0') {
@@ -159,7 +163,7 @@ class SSS {
     return hexData.substring(0, i + 1);
   }
 
-  // Converts an array of BigInt to the original byte array, removing any least significant nulls.
+  /// Converts an array of BigInt to the original byte array, removing any least significant nulls.
   String mergeBigIntToString(List<BigInt> secrets) {
     String rs = "";
     String hexData = "";
@@ -177,7 +181,7 @@ class SSS {
     return rs;
   }
 
-  // inNumbers(array, value) returns boolean whether or not value is in array.
+  /// inNumbers(array, value) returns boolean whether or not value is in array.
   bool inNumbers(List<BigInt> numbers, BigInt value) {
     for (BigInt n in numbers) {
       if (n.compareTo(value) == 0) {
@@ -187,9 +191,9 @@ class SSS {
     return false;
   }
 
-  // Compute the polynomial value using Horner's method.
-  // https://en.wikipedia.org/wiki/Horner%27s_method
-  // y = a + bx + cx^2 + dx^3 = ((dx + c)x + b)x + a
+  /// Compute the polynomial value using Horner's method.
+  /// https://en.wikipedia.org/wiki/Horner%27s_method
+  /// y = a + bx + cx^2 + dx^3 = ((dx + c)x + b)x + a
   BigInt evaluatePolynomial(List<List<BigInt>> poly, int part, BigInt x) {
     int last = poly[part].length - 1;
     BigInt accum = poly[part][last];
@@ -199,95 +203,11 @@ class SSS {
     return accum;
   }
 
-  // Returns a new array of secret shares (encoding x,y pairs as Base64 or Hex strings)
-  // created by Shamir's Secret Sharing Algorithm requiring a minimum number of
-  // share to recreate, of length shares, from the input secret raw as a string.
-  List<String> create(int minimum, int shares, String secret, bool isBase64) {
-    List<String> rs = List();
-    // Verify minimum isn't greater than shares; there is no way to recreate
-    // the original polynomial in our current setup, therefore it doesn't make
-    // sense to generate fewer shares than are needed to reconstruct the secret.
-    if (minimum > shares) {
-      throw new Exception("cannot require more shares then existing");
-    }
-
-    // Convert the secret to its respective 256-bit BigInteger representation
-    List<BigInt> secrets = splitSecretToBigInt(secret);
-
-    // List of currently used numbers in the polynomial
-    List<BigInt> numbers = List();
-    numbers.add(BigInt.zero);
-
-    // Create the polynomial of degree (minimum - 1); that is, the highest
-    // order term is (minimum-1), though as there is a constant term with
-    // order 0, there are (minimum) number of coefficients.
-    //
-    // However, the polynomial object is a 2d array, because we are constructing
-    // a different polynomial for each part of the secret
-    //
-    // polynomial[parts][minimum]
-    //BigInt[][] polynomial = new BigInt[secrets.size()][minimum];
-    var polynomial =
-        List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
-    for (int i = 0; i < secrets.length; i++) {
-      polynomial[i][0] = secrets[i];
-      for (int j = 1; j < minimum; j++) {
-        // Each coefficient should be unique
-        BigInt number = randomNumber();
-        while (inNumbers(numbers, number)) {
-          number = randomNumber();
-        }
-        numbers.add(number);
-
-        polynomial[i][j] = number;
-      }
-    }
-
-    // Create the points object; this holds the (x, y) points of each share.
-    // Again, because secrets is an array, each share could have multiple parts
-    // over which we are computing Shamir's Algorithm. The last dimension is
-    // always two, as it is storing an x, y pair of points.
-    //
-    // points[shares][parts][2]
-    //BigInt[][][] points = new BigInt[shares][secrets.size()][2];
-    var points = List<List<List<BigInt>>>.generate(shares,
-        (i) => List<List<BigInt>>.generate(secrets.length, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
-
-    // For every share...
-    for (int i = 0; i < shares; i++) {
-      String s = "";
-      // and every part of the secret...
-      for (int j = 0; j < secrets.length; j++) {
-        // generate a new x-coordinate
-        BigInt number = randomNumber();
-        while (inNumbers(numbers, number)) {
-          number = randomNumber();
-        }
-        numbers.add(number);
-
-        // and evaluate the polynomial at that point
-        points[i][j][0] = number;
-        points[i][j][1] = evaluatePolynomial(polynomial, j, number);
-
-        if (isBase64) { // encode to Base64.
-          s += toBase64Url(points[i][j][0]);
-          s += toBase64Url(points[i][j][1]);
-        } else { // encode to Hex.
-          s += toHex(points[i][j][0]);
-          s += toHex(points[i][j][1]);
-        }
-      }
-      rs.add(s);
-    }
-
-    return rs;
-  }
-
-  // Takes in a given string to check if it is a valid secret
-  // Requirements:
-  // 	 Length multiple of 88
-  //	 Can decode each 44 character block as Base64
-  // Returns only success/failure (bool)
+  /// Takes in a given string to check if it is a valid secret
+  /// Requirements:
+  /// 	 Length multiple of 88
+  ///	 Can decode each 44 character block as Base64
+  /// Returns only success/failure (bool)
   bool isValidShareBase64(String candidate) {
     if (candidate == null || candidate.isEmpty) {
       return false;
@@ -307,9 +227,9 @@ class SSS {
     return true;
   }
 
-  // Takes a string array of shares encoded in Base64 created via Shamir's
-  // Algorithm; each string must be of equal length of a multiple of 88 characters
-  // as a single 88 character share is a pair of 256-bit numbers (x, y).
+  /// Takes a string array of shares encoded in Base64 created via Shamir's
+  /// Algorithm; each string must be of equal length of a multiple of 88 characters
+  /// as a single 88 character share is a pair of 256-bit numbers (x, y).
   List<List<List<BigInt>>> decodeShareBase64(List<String> shares) {
     String first = shares[0];
     int parts = first.length ~/ 88;
@@ -343,11 +263,11 @@ class SSS {
     return points;
   }
 
-  // Takes in a given string to check if it is a valid secret
-  // Requirements:
-  // 	 Length multiple of 128
-  //	 Can decode each 64 character block as Hex
-  // Returns only success/failure (bool)
+  /// Takes in a given string to check if it is a valid secret
+  /// Requirements:
+  /// 	 Length multiple of 128
+  ///	 Can decode each 64 character block as Hex
+  /// Returns only success/failure (bool)
   bool isValidShareHex(String candidate) {
     if (candidate == null || candidate.isEmpty) {
       return false;
@@ -367,9 +287,9 @@ class SSS {
     return true;
   }
 
-  // Takes a string array of shares encoded in Hex created via Shamir's
-  // Algorithm; each string must be of equal length of a multiple of 128 characters
-  // as a single 128 character share is a pair of 256-bit numbers (x, y).
+  /// Takes a string array of shares encoded in Hex created via Shamir's
+  /// Algorithm; each string must be of equal length of a multiple of 128 characters
+  /// as a single 128 character share is a pair of 256-bit numbers (x, y).
   List<List<List<BigInt>>> decodeShareHex(List<String> shares) {
     String first = shares[0];
     int parts = first.length ~/ 128;
@@ -403,10 +323,94 @@ class SSS {
     return points;
   }
 
-  // Takes a string array of shares encoded in Base64 or Hex created via Shamir's Algorithm
-  // Note: the polynomial will converge if the specified minimum number of shares
-  //       or more are passed to this function. Passing thus does not affect it
-  //       Passing fewer however, simply means that the returned secret is wrong.
+  /// Returns a new array of secret shares (encoding x,y pairs as Base64 or Hex strings)
+  /// created by Shamir's Secret Sharing Algorithm requiring a minimum number of
+  /// share to recreate, of length shares, from the input secret raw as a string.
+  List<String> create(int minimum, int shares, String secret, bool isBase64) {
+    List<String> rs = List();
+    // Verify minimum isn't greater than shares; there is no way to recreate
+    // the original polynomial in our current setup, therefore it doesn't make
+    // sense to generate fewer shares than are needed to reconstruct the secret.
+    if (minimum <= 0 || shares <= 0) {
+      throw new Exception("minimum or shares is invalid");
+    }
+    if (minimum > shares) {
+      throw new Exception("cannot require more shares then existing");
+    }
+    if (secret.isEmpty) {
+      throw new Exception("secret is NULL or empty");
+    }
+
+    // Convert the secret to its respective 256-bit BigInteger representation
+    List<BigInt> secrets = splitSecretToBigInt(secret);
+
+    // List of currently used numbers in the polynomial
+    List<BigInt> numbers = List();
+    numbers.add(BigInt.zero);
+
+    // Create the polynomial of degree (minimum - 1); that is, the highest
+    // order term is (minimum-1), though as there is a constant term with
+    // order 0, there are (minimum) number of coefficients.
+    //
+    // However, the polynomial object is a 2d array, because we are constructing
+    // a different polynomial for each part of the secret
+    //
+    // polynomial[parts][minimum]
+    // BigInt[][] polynomial = new BigInt[secrets.size()][minimum];
+    var polynomial =
+    List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
+    for (int i = 0; i < secrets.length; i++) {
+      polynomial[i][0] = secrets[i];
+      for (int j = 1; j < minimum; j++) {
+        // Each coefficient should be unique
+        BigInt number = randomNumber();
+        while (inNumbers(numbers, number)) {
+          number = randomNumber();
+        }
+        numbers.add(number);
+
+        polynomial[i][j] = number;
+      }
+    }
+
+    // Create the points object; this holds the (x, y) points of each share.
+    // Again, because secrets is an array, each share could have multiple parts
+    // over which we are computing Shamir's Algorithm. The last dimension is
+    // always two, as it is storing an x, y pair of points.
+    //
+    // For every share...
+    for (int i = 0; i < shares; i++) {
+      String s = "";
+      // and every part of the secret...
+      for (int j = 0; j < secrets.length; j++) {
+        // generate a new x-coordinate
+        BigInt number = randomNumber();
+        while (inNumbers(numbers, number)) {
+          number = randomNumber();
+        }
+        numbers.add(number);
+
+        // and evaluate the polynomial at that point
+        BigInt x = number;
+        BigInt y = evaluatePolynomial(polynomial, j, number);
+        if (isBase64) { // encode to Base64.
+          s += toBase64Url(x);
+          s += toBase64Url(y);
+        } else { // encode to Hex.
+          s += toHex(x);
+          s += toHex(y);
+        }
+      }
+      rs.add(s);
+    }
+
+    return rs;
+  }
+
+  /// Takes a string array of shares encoded in Base64 or Hex created via Shamir's Algorithm
+  /// Note: the polynomial will converge if the specified minimum number of shares
+  ///       or more are passed to this function. Passing thus does not affect it
+  ///       Passing fewer however, simply means that the returned secret is wrong.
   String combine(List<String> shares, bool isBase64) {
     String rs = "";
     if (shares == null || shares.isEmpty) {
