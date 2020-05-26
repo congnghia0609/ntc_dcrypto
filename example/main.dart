@@ -121,29 +121,29 @@ main() {
 //  print("secret.length: ${s3.length}");
 
 
-  // test3
-  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  print("secret: $s");
-  print("secret.length: ${s.length}");
-  // creates a set of shares
-  List<String> arr = sss.create(3, 6, s, true);
-  //print(arr);
-
-  // combines shares into secret
-  var s1 = sss.combine(arr.sublist(0, 3), true);
-  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
-  print("secret: $s1");
-  print("secret.length: ${s1.length}");
-
-  var s2 = sss.combine(arr.sublist(3, arr.length), true);
-  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
-  print("secret: $s2");
-  print("secret.length: ${s2.length}");
-
-  var s3 = sss.combine(arr.sublist(1, 5), true);
-  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
-  print("secret: $s3");
-  print("secret.length: ${s3.length}");
+//  // test3
+//  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+//  print("secret: $s");
+//  print("secret.length: ${s.length}");
+//  // creates a set of shares
+//  List<String> arr = sss.create(3, 6, s, true);
+//  //print(arr);
+//
+//  // combines shares into secret
+//  var s1 = sss.combine(arr.sublist(0, 3), true);
+//  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
+//  print("secret: $s1");
+//  print("secret.length: ${s1.length}");
+//
+//  var s2 = sss.combine(arr.sublist(3, arr.length), true);
+//  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
+//  print("secret: $s2");
+//  print("secret.length: ${s2.length}");
+//
+//  var s3 = sss.combine(arr.sublist(1, 5), true);
+//  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
+//  print("secret: $s3");
+//  print("secret.length: ${s3.length}");
 
 
 //  // test4

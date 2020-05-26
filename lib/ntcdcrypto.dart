@@ -337,7 +337,7 @@ class SSS {
     if (minimum > shares) {
       throw new Exception("cannot require more shares then existing");
     }
-    if (secret.isEmpty) {
+    if (secret == null || secret.isEmpty) {
       throw new Exception("secret is NULL or empty");
     }
 
