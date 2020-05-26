@@ -17,3 +17,7 @@
 ## [0.0.5] - May 24, 2020.
 
 * Add feature encode/decode Base64Url.  
+
+## [0.1.0] - May 26, 2020.
+
+* Optimal and clean code.  
