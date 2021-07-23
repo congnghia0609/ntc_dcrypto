@@ -63,7 +63,7 @@ class SSS {
     Uint8List u8 = new Uint8List(len);
 
     var j = 0;
-    for (int i=0; i<len; i++) {
+    for (int i = 0; i < len; i++) {
       u8[i] = int.parse(hex.substring(j, j + 2), radix: 16);
       j += 2;
     }
@@ -75,7 +75,7 @@ class SSS {
   String u8ToHex(Uint8List u8) {
     String hex = "";
     int len = u8.length;
-    for (int i=0; i<len; i++) {
+    for (int i = 0; i < len; i++) {
       hex += u8[i].toRadixString(16).padLeft(2, '0');
     }
     return hex;
@@ -132,8 +132,8 @@ class SSS {
   /// the input byte; all values are right-padded to length 256 bit, even if the most
   /// significant bit is zero.
   List<BigInt> splitSecretToBigInt(String secret) {
-    List<BigInt> rs = List();
-    if (secret != null && secret.isNotEmpty) {
+    List<BigInt> rs = [];
+    if (secret.isNotEmpty) {
       String hexData = HEX.encode(utf8.encode(secret));
       int count = (hexData.length / 64.0).ceil();
       for (int i = 0; i < count; i++) {
@@ -209,7 +209,7 @@ class SSS {
   ///	 Can decode each 44 character block as Base64
   /// Returns only success/failure (bool)
   bool isValidShareBase64(String candidate) {
-    if (candidate == null || candidate.isEmpty) {
+    if (candidate.isEmpty) {
       return false;
     }
     if (candidate.length % 88 != 0) {
@@ -269,7 +269,7 @@ class SSS {
   ///	 Can decode each 64 character block as Hex
   /// Returns only success/failure (bool)
   bool isValidShareHex(String candidate) {
-    if (candidate == null || candidate.isEmpty) {
+    if (candidate.isEmpty) {
       return false;
     }
     if (candidate.length % 128 != 0) {
@@ -327,7 +327,7 @@ class SSS {
   /// created by Shamir's Secret Sharing Algorithm requiring a minimum number of
   /// share to recreate, of length shares, from the input secret raw as a string.
   List<String> create(int minimum, int shares, String secret, bool isBase64) {
-    List<String> rs = List();
+    List<String> rs = [];
     // Verify minimum isn't greater than shares; there is no way to recreate
     // the original polynomial in our current setup, therefore it doesn't make
     // sense to generate fewer shares than are needed to reconstruct the secret.
@@ -337,7 +337,7 @@ class SSS {
     if (minimum > shares) {
       throw new Exception("cannot require more shares then existing");
     }
-    if (secret == null || secret.isEmpty) {
+    if (secret.isEmpty) {
       throw new Exception("secret is NULL or empty");
     }
 
@@ -345,7 +345,7 @@ class SSS {
     List<BigInt> secrets = splitSecretToBigInt(secret);
 
     // List of currently used numbers in the polynomial
-    List<BigInt> numbers = List();
+    List<BigInt> numbers = [];
     numbers.add(BigInt.zero);
 
     // Create the polynomial of degree (minimum - 1); that is, the highest
@@ -358,7 +358,7 @@ class SSS {
     // polynomial[parts][minimum]
     // BigInt[][] polynomial = new BigInt[secrets.size()][minimum];
     var polynomial =
-    List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
+        List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
     for (int i = 0; i < secrets.length; i++) {
       polynomial[i][0] = secrets[i];
       for (int j = 1; j < minimum; j++) {
@@ -392,10 +392,12 @@ class SSS {
 
         // and evaluate the polynomial at that point
         BigInt y = evaluatePolynomial(polynomial, j, x);
-        if (isBase64) { // encode to Base64.
+        if (isBase64) {
+          // encode to Base64.
           s += toBase64Url(x);
           s += toBase64Url(y);
-        } else { // encode to Hex.
+        } else {
+          // encode to Hex.
           s += toHex(x);
           s += toHex(y);
         }
@@ -412,7 +414,7 @@ class SSS {
   ///       Passing fewer however, simply means that the returned secret is wrong.
   String combine(List<String> shares, bool isBase64) {
     String rs = "";
-    if (shares == null || shares.isEmpty) {
+    if (shares.isEmpty) {
       throw new Exception("shares is NULL or empty");
     }
 
@@ -429,19 +431,21 @@ class SSS {
 
     // Use Lagrange Polynomial Interpolation (LPI) to reconstruct the secret.
     // For each part of the secret (clearest to iterate over)...
-    List<BigInt> secrets = List();
+    List<BigInt> secrets = [];
     int numSecret = points[0].length;
     for (int j = 0; j < numSecret; j++) {
       secrets.add(BigInt.zero);
       // and every share...
-      for (int i = 0; i < shares.length; i++) { // LPI sum loop
+      for (int i = 0; i < shares.length; i++) {
+        // LPI sum loop
         // remember the current x and y values
         BigInt ax = points[i][j][0]; // ax
         BigInt ay = points[i][j][1]; // ay
         BigInt numerator = BigInt.one; // LPI numerator
         BigInt denominator = BigInt.one; // LPI denominator
         // and for every other point...
-        for (int k = 0; k < shares.length; k++) { // LPI product loop
+        for (int k = 0; k < shares.length; k++) {
+          // LPI product loop
           if (k != i) {
             // combine them via half products
             // x=0 ==> [(0-bx)/(ax-bx)] * ...
