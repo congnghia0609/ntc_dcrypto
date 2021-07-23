@@ -64,7 +64,6 @@ main() {
 //      size, (i) => List<int>.generate(size, (j) => 0));
 //  print(grid);
 
-
 //  // test1
 //  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 //  print("secret: $s");
@@ -88,7 +87,6 @@ main() {
 //  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
 //  print("secret: $s3");
 //  print("secret.length: ${s3.length}");
-
 
 //  // test2
 //  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
@@ -120,7 +118,6 @@ main() {
 //  print("secret: $s3");
 //  print("secret.length: ${s3.length}");
 
-
 //  // test3
 //  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 //  print("secret: $s");
@@ -144,7 +141,6 @@ main() {
 //  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
 //  print("secret: $s3");
 //  print("secret.length: ${s3.length}");
-
 
 //  // test4
 //  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
