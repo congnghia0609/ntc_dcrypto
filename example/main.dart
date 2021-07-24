@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 ///
 /// @author nghiatc
 /// @since Mar 16, 2020
@@ -22,11 +23,11 @@ import '../lib/ntcdcrypto.dart';
 main() {
   SSS sss = new SSS();
   // Test Dev
-//  // Dev1: random numbers
-//  for(var i=0;i<100;i++) {
-//    var rd = sss.randomNumber();
-//    print("rd: ${rd.toRadixString(10)}");
-//  }
+  // Dev1: random numbers
+  for (var i = 0; i < 10; i++) {
+    var rd = sss.randomNumber();
+    print("rd: ${rd.toRadixString(10)}");
+  }
 
 //  // Dev2: encode / decode
 //  BigInt number = BigInt.parse("67356225285819719212258382314594931188352598651646313425411610888829358649431");
