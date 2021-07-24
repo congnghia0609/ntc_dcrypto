@@ -21,6 +21,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:ntcdcrypto/ntcdcrypto.dart';
 
+// Run unittest
+// cd ntc_dcrypto
+// flutter test
 void main() {
   SSS sss = new SSS();
 
