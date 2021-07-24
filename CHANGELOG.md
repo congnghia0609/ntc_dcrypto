@@ -21,3 +21,7 @@
 ## [0.1.0] - May 26, 2020.
 
 * Optimal and clean code.  
+
+## [0.2.0] - Jul 24, 2021.
+
+* Migrate to null safety.  
