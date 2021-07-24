@@ -33,9 +33,9 @@ void main() {
     expect(hexdata.length, 64);
     expect(hexdata == "94ea45c32c2909e54070ad3f2ce286f98b56ef5c728f56d7d3a09c5bb5593057", true);
     var numb64decode = sss.fromBase64Url(b64data);
-    expect(numb64decode.compareTo(number) , 0);
+    expect(numb64decode.compareTo(number), 0);
     var numhexdecode = sss.fromHex(hexdata);
-    expect(numhexdecode.compareTo(number) , 0);
+    expect(numhexdecode.compareTo(number), 0);
   });
 
   test('Test split & merge', () {
@@ -66,7 +66,7 @@ void main() {
   test('Test combine Hex', () {
     String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
     // creates a set of shares
-    List<String> arr = List();
+    List<String> arr = [];
     arr.add("fb57922a2e9c65fa3ab813d9407aca04c5e395d2af9a63808ac3d9fb598c4aaac300d578573808fab2e714aac4011cf6d1d82a769e183241b8e77760aaa4a37486b68684f3a36d8fc7f8060db91b27a4546ed2c4f25e62ef614a72ee48fdf4716426cd2caaf1c06c89b35292b8af53baf4e75ea5e6865744b1131940d66adb148713204887b9bf932b1f323a856990bcabbd46f4ab69caf86f19a09ab7b749f8a119d86abe0325af1737a093dfe30253ce351173bf8eb8217048034c5ee05837cf976bc2bd3520c18d0e76e66d57e7ae907dbbca2175631d86be0f2be4662a07704fe613ee8703be3aabc629f9ffaf9c0095edec58ea9d0c8e6eec113bc79e34");
     arr.add("bb56025e23e7845cb10d579e24312c4a78eab9b0c2913938a9ea05630ddba625d1da75753543bb2d3e5511f69b025a8b8ee9efc73f7a3f2348e42bc1c3a3820b3abecd51f417710b4fd5531aaa3eede026ae69ddc3838231f38ea85115777200add59f23af85661546a6089602795192169e69bbccf72783ae5d1a6535076d5dcc2051b9d03cf6fbc66caa56d8e089affd102c0af52639e000b145494e0a8dd1575c2bda511b647a9d527ce0773a9c2ae37d60a21fab78a74dddeabce79a43ed1463e0f8ad07dbb217371896ad543a9755de297b38e6188dcc3dc2d82960ebdb9123135780e861d88e4219f2decc94d5b4dc41cdb4838169ce552e253066ad5b");
     arr.add("8e9d3dfa8e02f8a270a16a3dbf299313b38f20285ccd2b87752a2510384dc28a061a6709d42cc385c7f4e19c3e15e4727c3ba990e355b7951fd5bac00cbf8eb7cf367ba2e783f29044fd078ffbe483aa253159d1b668148258a3015807bd90f0544cd8c5ab5800efb403e8b6b3e56333e80cfd7993bfa1c58ad4d93aaaed7d6b334c104375c954e86ca7096617e5f40267dddd8718be8a23c4958e9dc7cd7923b1cdf99f8a5efe97d3c10e8f57fd514405961dc34b1fb2d593f5d8bb92425eb0028ce40dfaaca5f3a43ccecc3f9504be4e26250e7706b132a26fbace1575c3a92c2f981dcd93f9e098c83db646ed41a972382e77424d6ad566138757a350c6d1");
@@ -106,7 +106,7 @@ void main() {
   test('Test combine Base64Url', () {
     String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
     // creates a set of shares
-    List<String> arr = List();
+    List<String> arr = [];
     arr.add("5K658W3HsUJznGuG-Wopl5RmlgfnOlIywIXNMK3FLk8=o3nzK8zTmfbDGStLLeKsE0jJrCMFOpLY1KAGHWFVzmw=wDyZ65yO8m4cQFRgfePvv9Bm13lqPnn89-mGCM6fG4A=IJrdRsJYkPCW9EeHu0x2k7nYcjdybQNMo97rpqhutck=vUw82_ma8GcxtutzRDlGPuzH4-xEeDt7F4HBoQ-BiIQ=xLoPS4AkYTi7neR6U2X36nA9EritybvqpeW5Fk2rH2M=cts237KejOmRLCFlcJuQak6yWNlspWYbpG--159CDsI=uF2CE31BTxuNw52ArvOWU012pKhUSbh8RZyVLgkB1Fs=");
     arr.add("fTcsa9KUZ3Bj90Kjby3lQbWvw-qIz7qd3Hcp2GXFvOU=0I3lmm7QkNWceXgE7HlfqXFTjx9IC8DHJFxq1SHI38g=m-iAPMRkSeLhjBmpFCcVmK-ij717mo4A5CJb59x_WHc=QljK8TBqpMcGajO36Iq6TSY9i2sIpqryBUR-sM8AbS8=s_-MPlE5uyVL_x0tW4oqkhtUQ_p3ewck4SUhu_8BW7c=ngY2QG-0pw8dLUt6-n3Z8ZXAbu6omHsE487etr766U4=rBwse8m7gBiM-2sSSghUsZ6NyTr2AaUzlzYY73xySSQ=PlVKJLNYTQJQVrfr5xAYynR0jbOY1JRZlnxDX7jnvMg=");
     arr.add("w3Jkf6Z7Yu1AZ6MKItRcctLnfbYAdFCXL2GQ5MFHiMY=RkRsomEVMrDNTcRp9z0-7OuxejYPHS-8KaCe7zU4J8M=yewuhylKn3k-lEtWGzGr3GWcwq6Iq1C3K04gtUwDjr4=v7Brej_SAU1ZgeUbNATPG6b0DG4W_UvWKWP-y1zwf8E=y_7M0EXAsGNb1RczU5O3ETSdLP6ZnmNfe_GbFzDQTvI=sCM7OcGlgDdzqOJtGPJmFdqqlSSsl-cxESbMGdWmDaM=BsGo_7_Ex9yD6I4_NNRDdTJlBaSapklJjmqnklAHtVY=SnGjhnGzb44mW-Znf66gQ2-EQpPrzq3qKENlh6sraHI=");
