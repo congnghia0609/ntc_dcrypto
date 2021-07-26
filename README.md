@@ -73,7 +73,7 @@ main() {
 }
 ```
 
-### Run Unittest
+### Run Unit Test
 ```shell
 cd ntc_dcrypto
 flutter test
