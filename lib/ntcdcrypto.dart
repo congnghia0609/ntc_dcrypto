@@ -25,20 +25,24 @@ import 'dart:typed_data';
 import "package:hex/hex.dart";
 
 class SSS {
-  final BigInt prime =
-      BigInt.parse("115792089237316195423570985008687907853269984665640564039457584007913129639747", radix: 10);
-  var rand = Random.secure();
+  const SSS();
 
   /// 16bit, because random.nextInt() only supports (2^32)-1 possible values.
-  final part = 16; // 256bit / 16bit
-  final maxInt16 = 1 << 16; // 2^16
+  static const _part = 16; // 256bit / 16bit
+  static const _maxInt16 = 1 << 16; // 2^16
+
+  static final _rand = Random.secure();
+  static final _prime = BigInt.parse(
+    "115792089237316195423570985008687907853269984665640564039457584007913129639747",
+    radix: 10,
+  );
 
   /// Generate number 256-bits base 10.
   String genNumber() {
     String combinedVal = "";
     // random parts
-    for (var i = 0; i < part; i++) {
-      int part = rand.nextInt(maxInt16);
+    for (var i = 0; i < _part; i++) {
+      int part = _rand.nextInt(_maxInt16);
       combinedVal += part.toRadixString(10);
     }
     return combinedVal;
@@ -47,7 +51,7 @@ class SSS {
   /// Returns a random number from the range (0, PRIME-1) inclusive
   BigInt randomNumber() {
     BigInt rs = BigInt.parse(genNumber());
-    while (rs.compareTo(prime) >= 0) {
+    while (rs.compareTo(_prime) >= 0) {
       rs = BigInt.parse(genNumber());
     }
     return rs;
@@ -97,22 +101,6 @@ class SSS {
     return BigInt.parse(hexdata, radix: 16);
   }
 
-  /// Return Base64 string from BigInt 256 bits long
-  String toBase64(BigInt number) {
-    String hexdata = number.toRadixString(16);
-    int n = 64 - hexdata.length;
-    for (int i = 0; i < n; i++) {
-      hexdata = "0" + hexdata;
-    }
-    return base64Url.encode(utf8.encode(hexdata));
-  }
-
-  /// Return BigInt from Base64 string.
-  BigInt fromBase64(String number) {
-    String hexdata = utf8.decode(base64Url.decode(number));
-    return BigInt.parse(hexdata, radix: 16);
-  }
-
   /// Return Hex string from BigInt 256 bits long
   String toHex(BigInt number) {
     String hexdata = number.toRadixString(16);
@@ -138,7 +126,8 @@ class SSS {
       int count = (hexData.length / 64.0).ceil();
       for (int i = 0; i < count; i++) {
         if ((i + 1) * 64 < hexData.length) {
-          BigInt bi = BigInt.parse(hexData.substring(i * 64, (i + 1) * 64), radix: 16);
+          BigInt bi =
+              BigInt.parse(hexData.substring(i * 64, (i + 1) * 64), radix: 16);
           rs.add(bi);
         } else {
           String last = hexData.substring(i * 64, hexData.length);
@@ -156,10 +145,8 @@ class SSS {
 
   /// Remove right character '0'
   String trimRight(String hexData) {
-    int i = hexData.length - 1;
-    while (i >= 0 && hexData[i] == '0') {
-      --i;
-    }
+    var i = hexData.length - 1;
+    while (i > 0 && hexData[i] == '0' && hexData[i - 1] == '0') i -= 2;
     return hexData.substring(0, i + 1);
   }
 
@@ -198,7 +185,7 @@ class SSS {
     int last = poly[part].length - 1;
     BigInt accum = poly[part][last];
     for (int i = last - 1; i >= 0; --i) {
-      accum = ((accum * x) + poly[part][i]) % prime;
+      accum = ((accum * x) + poly[part][i]) % _prime;
     }
     return accum;
   }
@@ -220,7 +207,7 @@ class SSS {
       String part = candidate.substring(i * 44, (i + 1) * 44);
       BigInt decode = fromBase64Url(part);
       // decode <= 0 || decode >= PRIME ==> false
-      if (decode.compareTo(BigInt.zero) <= 0 || decode.compareTo(prime) >= 0) {
+      if (decode.compareTo(BigInt.zero) <= 0 || decode.compareTo(_prime) >= 0) {
         return false;
       }
     }
@@ -239,7 +226,9 @@ class SSS {
     //
     // points[shares][parts][2]
     var points = List<List<List<BigInt>>>.generate(
-        shares.length, (i) => List<List<BigInt>>.generate(parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+        shares.length,
+        (i) => List<List<BigInt>>.generate(
+            parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
     // For each share...
     for (int i = 0; i < shares.length; i++) {
@@ -280,7 +269,7 @@ class SSS {
       String part = candidate.substring(i * 64, (i + 1) * 64);
       BigInt decode = fromHex(part);
       // decode <= 0 || decode >= PRIME ==> false
-      if (decode.compareTo(BigInt.zero) <= 0 || decode.compareTo(prime) >= 0) {
+      if (decode.compareTo(BigInt.zero) <= 0 || decode.compareTo(_prime) >= 0) {
         return false;
       }
     }
@@ -299,7 +288,9 @@ class SSS {
     //
     // points[shares][parts][2]
     var points = List<List<List<BigInt>>>.generate(
-        shares.length, (i) => List<List<BigInt>>.generate(parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+        shares.length,
+        (i) => List<List<BigInt>>.generate(
+            parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
     // For each share...
     for (int i = 0; i < shares.length; i++) {
@@ -357,8 +348,8 @@ class SSS {
     //
     // polynomial[parts][minimum]
     // BigInt[][] polynomial = new BigInt[secrets.size()][minimum];
-    var polynomial =
-        List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
+    var polynomial = List<List<BigInt>>.generate(secrets.length,
+        (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
     for (int i = 0; i < secrets.length; i++) {
       polynomial[i][0] = secrets[i];
       for (int j = 1; j < minimum; j++) {
@@ -452,19 +443,19 @@ class SSS {
             BigInt bx = points[k][j][0]; // bx
             BigInt negbx = -bx; // (0-bx)
             BigInt axbx = ax - bx; // (ax-bx)
-            numerator = (numerator * negbx) % prime; // (0-bx)*...
-            denominator = (denominator * axbx) % prime; // (ax-bx)*...
+            numerator = (numerator * negbx) % _prime; // (0-bx)*...
+            denominator = (denominator * axbx) % _prime; // (ax-bx)*...
           }
         }
 
         // LPI product: x=0, y = ay * [(x-bx)/(ax-bx)] * ...
         // multiply together the points (ay)(numerator)(denominator)^-1 ...
-        BigInt fx = (ay * numerator) % prime;
-        fx = (fx * (denominator.modInverse(prime))) % prime;
+        BigInt fx = (ay * numerator) % _prime;
+        fx = (fx * (denominator.modInverse(_prime))) % _prime;
 
         // LPI sum: s = fx + fx + ...
         BigInt secret = secrets[j];
-        secret = (secret + fx) % prime;
+        secret = (secret + fx) % _prime;
         secrets[j] = secret;
       }
     }

@@ -1,6 +1,6 @@
 name: ntcdcrypto
 description: ntc_dcrypto is a module dart cryptography. Includes utility classes for encryption in the Dart programming.
-version: 0.2.0
+version: 0.2.1
 #author: NghiaTC
 homepage: https://github.com/congnghia0609/ntc_dcrypto
 
@@ -8,8 +8,6 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
   hex: ^0.2.0
 
 dev_dependencies:
