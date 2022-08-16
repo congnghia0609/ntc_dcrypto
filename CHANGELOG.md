@@ -25,3 +25,14 @@
 ## [0.2.0] - Jul 24, 2021.
 
 * Migrate to null safety.  
+
+## [1.0.0] - Aug 16, 2022.
+
+* fix bug with triming right zero bytes
+* remove SSS class, make methods as functions
+* make only required functions as public
+* make all interface parameters as named
+* optimize and clean code
+* remove dependency (package HEX)
+* add tests
+* rename library

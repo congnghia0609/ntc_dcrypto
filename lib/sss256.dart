@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 ///
 /// @author nghiatc
 /// @since Mar 16, 2020
@@ -22,20 +21,6 @@
 /// @since Aug 16, 2022
 ///
 
-import '../lib/sss256.dart';
+library sss256;
 
-main() {
-  const secret = 'Very secret "foo bar"';
-
-  print('Secret before encoding: $secret');
-  final shares = splitSecret(
-    secret: secret,
-    treshold: 3,
-    shares: 6,
-  );
-
-  print('Secret splited shares:');
-  print(shares);
-  final restoredSecret = restoreSecret(shares: shares.sublist(0, 3));
-  print('\nRestored secret: $restoredSecret');
-}
+export 'src/ntcdcrypto.dart' show splitSecret, restoreSecret;
