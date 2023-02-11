@@ -1,81 +1,67 @@
-# ntc_dcrypto
-ntc_dcrypto is a module dart cryptography.  
+# sss256
+sss256 is a library with utilities for encode\decode secret with Shamir`s Secret Sharing algo
+
 
 ## Use this package as a library
 Add this to your package's pubspec.yaml file:  
 ```yaml
 dependencies:
-  ntcdcrypto: ^0.2.0
+  sss256: ^1.0.0
 ```
 
+
 ## 1. An implementation of Shamir's Secret Sharing Algorithm 256-bits in Dart
+
 
 ### Usage
 **Use encode/decode Base64Url**  
 ```dart
-import 'package:ntcdcrypto/ntcdcrypto.dart';
+import 'package:sss256';
 
 main() {
-  SSS sss = new SSS();
-  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  print("secret: ${s}");
-  print("secret.length: ${s.length}");
-  // creates a set of shares
-  List<String> arr = sss.create(3, 6, s, true);
-  //print(arr);
+  const secret = 'Very secret "foo bar"';
 
-  // combines shares into secret
-  var s1 = sss.combine(arr.sublist(0, 3), true);
-  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
-  print("secret: ${s1}");
-  print("secret.length: ${s1.length}");
+  print('Secret before encoding: $secret');
+  final shares = splitSecret(
+    secret: secret,
+    treshold: 3,
+    shares: 6,
+  );
 
-  var s2 = sss.combine(arr.sublist(3, arr.length), true);
-  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
-  print("secret: ${s2}");
-  print("secret.length: ${s2.length}");
-
-  var s3 = sss.combine(arr.sublist(1, 5), true);
-  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
-  print("secret: ${s3}");
-  print("secret.length: ${s3.length}");
+  print('Secret splited shares:');
+  print(shares);
+  final restoredSecret = restoreSecret(shares: shares.sublist(0, 3));
+  print('\nRestored secret: $restoredSecret');
 }
 ```
+
 
 **Use encode/decode Hex**  
 ```dart
-import 'package:ntcdcrypto/ntcdcrypto.dart';
+import 'package:sss256';
 
 main() {
-  SSS sss = new SSS();
-  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-  print("secret: ${s}");
-  print("secret.length: ${s.length}");
-  // creates a set of shares
-  List<String> arr = sss.create(3, 6, s, false);
-  //print(arr);
+  const secret = 'Very secret "foo bar"';
 
-  // combines shares into secret
-  var s1 = sss.combine(arr.sublist(0, 3), false);
-  print("combines shares 1 length = ${arr.sublist(0, 3).length}");
-  print("secret: ${s1}");
-  print("secret.length: ${s1.length}");
+  print('Secret before encoding: $secret');
+  final shares = splitSecret(
+    isBase64: false,
+    secret: secret,
+    treshold: 3,
+    shares: 6,
 
-  var s2 = sss.combine(arr.sublist(3, arr.length), false);
-  print("combines shares 2 length = ${arr.sublist(3, arr.length).length}");
-  print("secret: ${s2}");
-  print("secret.length: ${s2.length}");
+  );
 
-  var s3 = sss.combine(arr.sublist(1, 5), false);
-  print("combines shares 3 length = ${arr.sublist(1, 5).length}");
-  print("secret: ${s3}");
-  print("secret.length: ${s3.length}");
+  print('Secret splited shares:');
+  print(shares);
+  final restoredSecret = restoreSecret(shares: shares.sublist(0, 3), isBase64: false);
+  print('\nRestored secret: $restoredSecret');
 }
 ```
 
+
 ### Run Unit Test
 ```shell
-cd ntc_dcrypto
 flutter test
 ```
 
