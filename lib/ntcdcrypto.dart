@@ -22,7 +22,6 @@ library ntcdcrypto;
 import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
-import "package:hex/hex.dart";
 
 class SSS {
   final BigInt prime =
@@ -83,44 +82,42 @@ class SSS {
 
   /// Return Base64Url string from BigInt 256 bits long
   String toBase64Url(BigInt number) {
-    String hexdata = number.toRadixString(16);
-    int n = 64 - hexdata.length;
+    String hexData = number.toRadixString(16);
+    int n = 64 - hexData.length;
     for (int i = 0; i < n; i++) {
-      hexdata = "0" + hexdata;
+      hexData = "0" + hexData;
     }
-    return base64Url.encode(hexToU8(hexdata));
+    return base64Url.encode(hexToU8(hexData));
   }
 
   /// Return BigInt from Base64Url string.
   BigInt fromBase64Url(String number) {
-    String hexdata = u8ToHex(base64Url.decode(number));
-    return BigInt.parse(hexdata, radix: 16);
+    return BigInt.parse(u8ToHex(base64Url.decode(number)), radix: 16);
   }
 
   /// Return Base64 string from BigInt 256 bits long
   String toBase64(BigInt number) {
-    String hexdata = number.toRadixString(16);
-    int n = 64 - hexdata.length;
+    String hexData = number.toRadixString(16);
+    int n = 64 - hexData.length;
     for (int i = 0; i < n; i++) {
-      hexdata = "0" + hexdata;
+      hexData = "0" + hexData;
     }
-    return base64Url.encode(utf8.encode(hexdata));
+    return base64Url.encode(utf8.encode(hexData));
   }
 
   /// Return BigInt from Base64 string.
   BigInt fromBase64(String number) {
-    String hexdata = utf8.decode(base64Url.decode(number));
-    return BigInt.parse(hexdata, radix: 16);
+    return BigInt.parse(utf8.decode(base64Url.decode(number)), radix: 16);
   }
 
   /// Return Hex string from BigInt 256 bits long
   String toHex(BigInt number) {
-    String hexdata = number.toRadixString(16);
-    int n = 64 - hexdata.length;
+    String hexData = number.toRadixString(16);
+    int n = 64 - hexData.length;
     for (int i = 0; i < n; i++) {
-      hexdata = "0" + hexdata;
+      hexData = "0" + hexData;
     }
-    return hexdata;
+    return hexData;
   }
 
   /// Return BigInt from Hex string.
@@ -132,53 +129,48 @@ class SSS {
   /// the input byte; all values are right-padded to length 256 bit, even if the most
   /// significant bit is zero.
   List<BigInt> splitSecretToBigInt(String secret) {
-    List<BigInt> rs = [];
-    if (secret.isNotEmpty) {
-      String hexData = HEX.encode(utf8.encode(secret));
-      int count = (hexData.length / 64.0).ceil();
-      for (int i = 0; i < count; i++) {
-        if ((i + 1) * 64 < hexData.length) {
-          BigInt bi = BigInt.parse(hexData.substring(i * 64, (i + 1) * 64), radix: 16);
-          rs.add(bi);
-        } else {
-          String last = hexData.substring(i * 64, hexData.length);
-          int n = 64 - last.length;
-          for (int j = 0; j < n; j++) {
-            last += "0";
-          }
-          BigInt bi = BigInt.parse(last, radix: 16);
-          rs.add(bi);
-        }
-      }
+    final stringBuffer = StringBuffer();
+    for (final byte in utf8.encode(secret)) {
+      if (byte < 0 || byte > 255) throw const FormatException();
+      stringBuffer.write(byte.toRadixString(16).padLeft(2, '0'));
     }
-    return rs;
+    final hex = stringBuffer.toString();
+    return [
+      for (var i = 0; i < hex.length; i += 64)
+        BigInt.parse(
+          i + 64 < hex.length
+              ? hex.substring(i, i + 64)
+              : hex.substring(i).padRight(64, '0'),
+          radix: 16,
+        )
+    ];
   }
 
-  /// Remove right character '0'
-  String trimRight(String hexData) {
-    int i = hexData.length - 1;
-    while (i >= 0 && hexData[i] == '0') {
-      --i;
+  /// Remove right doubled characters '0' (zero byte in hex)
+  String trimRightDoubledZero(String hexData) {
+    int end = hexData.length;
+    for (int i = hexData.length - 1; i > 2; i -= 2) {
+      if (hexData[i] == '0' && hexData[i - 1] == '0')
+        end = i - 1;
+      else
+        break;
     }
-    return hexData.substring(0, i + 1);
+    return end == hexData.length ? hexData : hexData.substring(0, end);
   }
+
+  /// Converts Hex String to byte array
+  Uint8List hexToBytes(String value) => Uint8List.fromList([
+    for (var i = 0; i < value.length; i += 2)
+      int.parse(value.substring(i, i + 2), radix: 16)
+  ]);
 
   /// Converts an array of BigInt to the original byte array, removing any least significant nulls.
   String mergeBigIntToString(List<BigInt> secrets) {
-    String rs = "";
-    String hexData = "";
-    for (BigInt s in secrets) {
-      String tmp = s.toRadixString(16);
-      int n = 64 - tmp.length;
-      for (int j = 0; j < n; j++) {
-        tmp = "0" + tmp;
-      }
-      hexData = hexData + tmp;
+    final stringBuffer = StringBuffer();
+    for (final s in secrets) {
+      stringBuffer.write(s.toRadixString(16).padLeft(64, '0'));
     }
-    hexData = trimRight(hexData);
-    //print(hexData);
-    rs = utf8.decode(HEX.decode(hexData));
-    return rs;
+    return utf8.decode(hexToBytes(trimRightDoubledZero(stringBuffer.toString())));
   }
 
   /// inNumbers(array, value) returns boolean whether or not value is in array.
@@ -254,10 +246,10 @@ class SSS {
 
       // and for each part, find the x,y pair...
       for (int j = 0; j < count; j++) {
-        String cshare = share.substring(j * 88, (j + 1) * 88);
+        String pair = share.substring(j * 88, (j + 1) * 88);
         // decoding from Hex.
-        points[i][j][0] = fromBase64Url(cshare.substring(0, 44));
-        points[i][j][1] = fromBase64Url(cshare.substring(44, 88));
+        points[i][j][0] = fromBase64Url(pair.substring(0, 44));
+        points[i][j][1] = fromBase64Url(pair.substring(44, 88));
       }
     }
     return points;
@@ -314,10 +306,10 @@ class SSS {
 
       // and for each part, find the x,y pair...
       for (int j = 0; j < count; j++) {
-        String cshare = share.substring(j * 128, (j + 1) * 128);
+        String pair = share.substring(j * 128, (j + 1) * 128);
         // decoding from Hex.
-        points[i][j][0] = fromHex(cshare.substring(0, 64));
-        points[i][j][1] = fromHex(cshare.substring(64, 128));
+        points[i][j][0] = fromHex(pair.substring(0, 64));
+        points[i][j][1] = fromHex(pair.substring(64, 128));
       }
     }
     return points;
@@ -450,10 +442,8 @@ class SSS {
             // combine them via half products
             // x=0 ==> [(0-bx)/(ax-bx)] * ...
             BigInt bx = points[k][j][0]; // bx
-            BigInt negbx = -bx; // (0-bx)
-            BigInt axbx = ax - bx; // (ax-bx)
-            numerator = (numerator * negbx) % prime; // (0-bx)*...
-            denominator = (denominator * axbx) % prime; // (ax-bx)*...
+            numerator = (numerator * -bx) % prime; // (0-bx)*...
+            denominator = (denominator * (ax - bx)) % prime; // (ax-bx)*...
           }
         }
 
@@ -463,9 +453,7 @@ class SSS {
         fx = (fx * (denominator.modInverse(prime))) % prime;
 
         // LPI sum: s = fx + fx + ...
-        BigInt secret = secrets[j];
-        secret = (secret + fx) % prime;
-        secrets[j] = secret;
+        secrets[j] = (secrets[j] + fx) % prime;
       }
     }
 

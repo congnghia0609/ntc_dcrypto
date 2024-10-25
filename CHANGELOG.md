@@ -25,3 +25,8 @@
 ## [0.2.0] - Jul 24, 2021.
 
 * Migrate to null safety.  
+
+## [0.3.0] - Oct 26, 2024.
+
+* Remove dependency hex.  
+* Fix bug SSS with special cases: not Latin symbols (Ex: Cyrillic).  

@@ -128,4 +128,38 @@ void main() {
     var s3 = sss.combine(arr.sublist(1, 5), true);
     expect(s3, s);
   });
+
+  test('Test create & combine Hex with special cases: not Latin symbols', () {
+    String s = "бар"; // Cyrillic
+    // creates a set of shares
+    List<String> arr = sss.create(3, 6, s, false);
+    expect(arr.length, 6);
+
+    // combines shares into secret
+    var s1 = sss.combine(arr.sublist(0, 3), false);
+    expect(s1, s);
+
+    var s2 = sss.combine(arr.sublist(3, arr.length), false);
+    expect(s2, s);
+
+    var s3 = sss.combine(arr.sublist(1, 5), false);
+    expect(s3, s);
+  });
+
+  test('Test create & combine Base64Url with special cases: not Latin symbols', () {
+    String s = "бар"; // Cyrillic
+    // creates a set of shares
+    List<String> arr = sss.create(3, 6, s, true);
+    expect(arr.length, 6);
+
+    // combines shares into secret
+    var s1 = sss.combine(arr.sublist(0, 3), true);
+    expect(s1, s);
+
+    var s2 = sss.combine(arr.sublist(3, arr.length), true);
+    expect(s2, s);
+
+    var s3 = sss.combine(arr.sublist(1, 5), true);
+    expect(s3, s);
+  });
 }
