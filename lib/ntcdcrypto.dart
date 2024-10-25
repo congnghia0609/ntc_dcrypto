@@ -150,10 +150,11 @@ class SSS {
   String trimRightDoubledZero(String hexData) {
     int end = hexData.length;
     for (int i = hexData.length - 1; i > 2; i -= 2) {
-      if (hexData[i] == '0' && hexData[i - 1] == '0')
+      if (hexData[i] == '0' && hexData[i - 1] == '0') {
         end = i - 1;
-      else
+      } else {
         break;
+      }
     }
     return end == hexData.length ? hexData : hexData.substring(0, end);
   }
