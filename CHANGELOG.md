@@ -30,3 +30,7 @@
 
 * Remove dependency hex.  
 * Fix bug SSS with special cases: not Latin symbols (Ex: Cyrillic).  
+
+## [0.4.0] - Mar 25, 2025.
+
+* Support for both Dart 2 and Dart 3.
