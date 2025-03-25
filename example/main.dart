@@ -23,7 +23,8 @@ import '../lib/ntcdcrypto.dart';
 main() {
   SSS sss = new SSS();
 
-  String s = "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+  String s =
+      "nghiatcxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
   print("Secret key origin: $s");
 
   // 1. SSS create & combine with Hex encode/decode

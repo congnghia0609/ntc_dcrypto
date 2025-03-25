@@ -24,8 +24,9 @@ import 'dart:math';
 import 'dart:typed_data';
 
 class SSS {
-  final BigInt prime =
-      BigInt.parse("115792089237316195423570985008687907853269984665640564039457584007913129639747", radix: 10);
+  final BigInt prime = BigInt.parse(
+      "115792089237316195423570985008687907853269984665640564039457584007913129639747",
+      radix: 10);
   var rand = Random.secure();
 
   /// 16bit, because random.nextInt() only supports (2^32)-1 possible values.
@@ -161,9 +162,9 @@ class SSS {
 
   /// Converts Hex String to byte array
   Uint8List hexToBytes(String value) => Uint8List.fromList([
-    for (var i = 0; i < value.length; i += 2)
-      int.parse(value.substring(i, i + 2), radix: 16)
-  ]);
+        for (var i = 0; i < value.length; i += 2)
+          int.parse(value.substring(i, i + 2), radix: 16)
+      ]);
 
   /// Converts an array of BigInt to the original byte array, removing any least significant nulls.
   String mergeBigIntToString(List<BigInt> secrets) {
@@ -171,7 +172,8 @@ class SSS {
     for (final s in secrets) {
       stringBuffer.write(s.toRadixString(16).padLeft(64, '0'));
     }
-    return utf8.decode(hexToBytes(trimRightDoubledZero(stringBuffer.toString())));
+    return utf8
+        .decode(hexToBytes(trimRightDoubledZero(stringBuffer.toString())));
   }
 
   /// inNumbers(array, value) returns boolean whether or not value is in array.
@@ -232,7 +234,9 @@ class SSS {
     //
     // points[shares][parts][2]
     var points = List<List<List<BigInt>>>.generate(
-        shares.length, (i) => List<List<BigInt>>.generate(parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+        shares.length,
+        (i) => List<List<BigInt>>.generate(
+            parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
     // For each share...
     for (int i = 0; i < shares.length; i++) {
@@ -292,7 +296,9 @@ class SSS {
     //
     // points[shares][parts][2]
     var points = List<List<List<BigInt>>>.generate(
-        shares.length, (i) => List<List<BigInt>>.generate(parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
+        shares.length,
+        (i) => List<List<BigInt>>.generate(
+            parts, (j) => List<BigInt>.generate(2, (k) => BigInt.zero)));
 
     // For each share...
     for (int i = 0; i < shares.length; i++) {
@@ -350,8 +356,8 @@ class SSS {
     //
     // polynomial[parts][minimum]
     // BigInt[][] polynomial = new BigInt[secrets.size()][minimum];
-    var polynomial =
-        List<List<BigInt>>.generate(secrets.length, (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
+    var polynomial = List<List<BigInt>>.generate(secrets.length,
+        (i) => List<BigInt>.generate(minimum, (j) => BigInt.zero));
     for (int i = 0; i < secrets.length; i++) {
       polynomial[i][0] = secrets[i];
       for (int j = 1; j < minimum; j++) {
@@ -415,12 +421,7 @@ class SSS {
     // and size of each share (number of parts in the secret).
     //
     // points[shares][parts][2]
-    var points;
-    if (isBase64) {
-      points = decodeShareBase64(shares);
-    } else {
-      points = decodeShareHex(shares);
-    }
+    var points = isBase64 ? decodeShareBase64(shares) : decodeShareHex(shares);
 
     // Use Lagrange Polynomial Interpolation (LPI) to reconstruct the secret.
     // For each part of the secret (clearest to iterate over)...
